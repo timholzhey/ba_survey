@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Umfrage</title>
+</head>
+<body>
+    <h1>{{ question.question }}</h1>
+    <form action="/survey_delay_question" method="post">
+        <input type="hidden" name="question_group" value="{{ question.group }}">
+        <input type="hidden" name="question_id" value="{{ question.id }}">
+        {% for answer in question.answer_options %}
+            <input type="radio" name="answer_option_id" value="{{ answer.id }}"> {{ answer.value_string }}<br>
+        {% endfor %}
+        <input type="submit" value="Antworten">
+    </form>
+</body>
+</html>
