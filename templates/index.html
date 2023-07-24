@@ -1,15 +1,26 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Umfrage</title>
+    {% include 'components/head.html' %}
 </head>
 <body>
-    <h1>Umfrage</h1>
-    <p>Text</p>
-    <form action="/start_survey" method="post">
-        <input type="submit" value="Umfrage starten">
-    </form>
+    <main>
+        <h1>Umfrage: Delay and probability discounting</h1>
+        <hr>
+        <p class="info-text">
+            Herzlich Wilkommen zu der Studie bezüglich meiner Bachelorarbeit<br>
+            <br>
+            Die Umfrage dauert ungefähr 8 Minuten. Ich bitte Sie die Fragen genau durchzulesen und die Umfrage nicht während der Durchführung abzubrechen. Außerdem bitte ich Sie, keine unüberdachten Antworten anzugeben.<br>
+            Die Umfrage sieht keine Vergütung vor.<br>
+            Die Daten werden nur im Rahmen der Bachelorarbeit ausgewertet.<br>
+            Die Umfrage ist anonym.<br>
+            <br>
+            Vielen Dank für die Teilnahme!
+        </p>
+        <form action="/start_survey" method="post">
+            <input type="submit" value="START">
+        </form>
+        {% include 'components/footer.html' %}
+    </main>
 </body>
 </html>

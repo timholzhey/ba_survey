@@ -1,12 +1,19 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Umfrage</title>
+    {% include 'components/head.html' %}
 </head>
 <body>
-    <h1>Ende der Umfrage</h1>
-    <a href="/">Zurück zur Startseite</a>
+    <main>
+        <h1>Ende der Umfrage</h1>
+        <hr>
+        <p class="info-text">
+            Danke für Ihre Teilnahme!
+        </p>
+        <form action="/" method="get">
+            <input type="submit" value="ZUM ANFANG">
+        </form>
+        {% include 'components/footer.html' %}
+    </main>
 </body>
 </html>

@@ -1,19 +1,33 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Umfrage</title>
+    {% include 'components/head.html' %}
 </head>
 <body>
-    <h1>{{ question.question }}</h1>
-    <form action="/survey_delay_question" method="post">
-        <input type="hidden" name="question_group" value="{{ question.group }}">
-        <input type="hidden" name="question_id" value="{{ question.id }}">
-        {% for answer in question.answer_options %}
-            <input type="radio" name="answer_option_id" value="{{ answer.id }}"> {{ answer.value_string }}<br>
-        {% endfor %}
-        <input type="submit" value="Antworten">
-    </form>
+    <main>
+        <h1>{{ question.question }}</h1>
+        <hr>
+        <form action="/survey_delay_question" method="post">
+            <input type="hidden" name="question_group" value="{{ question.group }}">
+            <input type="hidden" name="question_id" value="{{ question.id }}">
+            <input type="hidden" name="answer_option_id" value="0">
+            <div class="form-list">
+            {% for answer in question.answer_options %}
+                <div class="form-list-item" data-value="{{ answer.id }}">{{ answer.value_string }}</div>
+            {% endfor %}
+            </div>
+        </form>
+    </main>
+    {% include 'components/footer.html' %}
+    <script>
+        document.querySelectorAll(".form-list-item").forEach(
+            elt => {
+                elt.addEventListener("click", () => {
+                    document.getElementsByName("answer_option_id")[0].value = elt.getAttribute("data-value");
+                    document.forms[0].submit();
+                })
+            }
+        )
+    </script>
 </body>
 </html>

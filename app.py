@@ -1,4 +1,4 @@
-from flask import Flask, render_template, session, request, redirect
+from flask import Flask, render_template, session, request, redirect, send_file
 from flask_session import Session
 import uuid
 import logging
@@ -46,26 +46,26 @@ class SurveyQuestion:
 
 def get_question_groups() -> list[list]:
     return [
-        [100, 200, "1 Monat", "Möchten Sie lieber in {0} {1} € zahlen oder {2} € jetzt?", "{1} jetzt", "{2} in {0}"],
-        [100, 200, "6 Monaten", "Möchten Sie lieber in {0} {1} € zahlen oder {2} € jetzt?", "{1} jetzt", "{2} in {0}"],
-        [100, 200, "1 Jahr", "Möchten Sie lieber in {0} {1} € zahlen oder {2} € jetzt?", "{1} jetzt", "{2} in {0}"],
-        [100, 200, "5 Jahren", "Möchten Sie lieber in {0} {1} € zahlen oder {2} € jetzt?", "{1} jetzt", "{2} in {0}"],
-        [100, 200, "10 Jahren", "Möchten Sie lieber in {0} {1} € zahlen oder {2} € jetzt?", "{1} jetzt", "{2} in {0}"],
-        [1500, 3000, "1 Monat", "Möchten Sie lieber in {0} {1} € zahlen oder {2} € jetzt?", "{1} jetzt", "{2} in {0}"],
-        [1500, 3000, "6 Monaten", "Möchten Sie lieber in {0} {1} € zahlen oder {2} € jetzt?", "{1} jetzt", "{2} in {0}"],
-        [1500, 3000, "1 Jahr", "Möchten Sie lieber in {0} {1} € zahlen oder {2} € jetzt?", "{1} jetzt", "{2} in {0}"],
-        [1500, 3000, "5 Jahren", "Möchten Sie lieber in {0} {1} € zahlen oder {2} € jetzt?", "{1} jetzt", "{2} in {0}"],
-        [1500, 3000, "10 Jahren", "Möchten Sie lieber in {0} {1} € zahlen oder {2} € jetzt?", "{1} jetzt", "{2} in {0}"],
-        [100, 200, "95 %", "Möchten Sie lieber {1} mit Sicherheit zahlen oder {2} mit einer Wahrscheinlichkeit von {0} %?", "{1} mit Sicherheit", "{2} mit einer Wahrscheinlichkeit von {0} %"],
-        [100, 200, "90 %", "Möchten Sie lieber {1} mit Sicherheit zahlen oder {2} mit einer Wahrscheinlichkeit von {0} %?", "{1} mit Sicherheit", "{2} mit einer Wahrscheinlichkeit von {0} %"],
-        [100, 200, "75 %", "Möchten Sie lieber {1} mit Sicherheit zahlen oder {2} mit einer Wahrscheinlichkeit von {0} %?", "{1} mit Sicherheit", "{2} mit einer Wahrscheinlichkeit von {0} %"],
-        [100, 200, "33 %", "Möchten Sie lieber {1} mit Sicherheit zahlen oder {2} mit einer Wahrscheinlichkeit von {0} %?", "{1} mit Sicherheit", "{2} mit einer Wahrscheinlichkeit von {0} %"],
-        [100, 200, "10 %", "Möchten Sie lieber {1} mit Sicherheit zahlen oder {2} mit einer Wahrscheinlichkeit von {0} %?", "{1} mit Sicherheit", "{2} mit einer Wahrscheinlichkeit von {0} %"],
-        [1500, 3000, "95 %", "Möchten Sie lieber {1} mit Sicherheit zahlen oder {2} mit einer Wahrscheinlichkeit von {0} %?", "{1} mit Sicherheit", "{2} mit einer Wahrscheinlichkeit von {0} %"],
-        [1500, 3000, "90 %", "Möchten Sie lieber {1} mit Sicherheit zahlen oder {2} mit einer Wahrscheinlichkeit von {0} %?", "{1} mit Sicherheit", "{2} mit einer Wahrscheinlichkeit von {0} %"],
-        [1500, 3000, "75 %", "Möchten Sie lieber {1} mit Sicherheit zahlen oder {2} mit einer Wahrscheinlichkeit von {0} %?", "{1} mit Sicherheit", "{2} mit einer Wahrscheinlichkeit von {0} %"],
-        [1500, 3000, "33 %", "Möchten Sie lieber {1} mit Sicherheit zahlen oder {2} mit einer Wahrscheinlichkeit von {0} %?", "{1} mit Sicherheit", "{2} mit einer Wahrscheinlichkeit von {0} %"],
-        [1500, 3000, "10 %", "Möchten Sie lieber {1} mit Sicherheit zahlen oder {2} mit einer Wahrscheinlichkeit von {0} %?", "{1} mit Sicherheit", "{2} mit einer Wahrscheinlichkeit von {0} %"]
+        [100, 200, "1 Monat", "Möchten Sie lieber in {0} {1} € zahlen oder {2} € jetzt?", "{1} € jetzt", "{2} € in {0}"],
+        [100, 200, "6 Monaten", "Möchten Sie lieber in {0} {1} € zahlen oder {2} € jetzt?", "{1} € jetzt", "{2} € in {0}"],
+        [100, 200, "1 Jahr", "Möchten Sie lieber in {0} {1} € zahlen oder {2} € jetzt?", "{1} € jetzt", "{2} € in {0}"],
+        [100, 200, "5 Jahren", "Möchten Sie lieber in {0} {1} € zahlen oder {2} € jetzt?", "{1} € jetzt", "{2} € in {0}"],
+        [100, 200, "10 Jahren", "Möchten Sie lieber in {0} {1} € zahlen oder {2} € jetzt?", "{1} € jetzt", "{2} € in {0}"],
+        [1500, 3000, "1 Monat", "Möchten Sie lieber in {0} {1} € zahlen oder {2} € jetzt?", "{1} € jetzt", "{2} € in {0}"],
+        [1500, 3000, "6 Monaten", "Möchten Sie lieber in {0} {1} € zahlen oder {2} € jetzt?", "{1} € jetzt", "{2} € in {0}"],
+        [1500, 3000, "1 Jahr", "Möchten Sie lieber in {0} {1} € zahlen oder {2} € jetzt?", "{1} € jetzt", "{2} € in {0}"],
+        [1500, 3000, "5 Jahren", "Möchten Sie lieber in {0} {1} € zahlen oder {2} € jetzt?", "{1} € jetzt", "{2} € in {0}"],
+        [1500, 3000, "10 Jahren", "Möchten Sie lieber in {0} {1} € zahlen oder {2} € jetzt?", "{1} € jetzt", "{2} € in {0}"],
+        [100, 200, "95 %", "Möchten Sie lieber {1} mit Sicherheit zahlen oder {2} mit einer Wahrscheinlichkeit von {0}?", "{1} € mit Sicherheit", "{2} € mit einer Wahrscheinlichkeit von {0}"],
+        [100, 200, "90 %", "Möchten Sie lieber {1} mit Sicherheit zahlen oder {2} mit einer Wahrscheinlichkeit von {0}?", "{1} € mit Sicherheit", "{2} € mit einer Wahrscheinlichkeit von {0}"],
+        [100, 200, "75 %", "Möchten Sie lieber {1} mit Sicherheit zahlen oder {2} mit einer Wahrscheinlichkeit von {0}?", "{1} € mit Sicherheit", "{2} € mit einer Wahrscheinlichkeit von {0}"],
+        [100, 200, "33 %", "Möchten Sie lieber {1} mit Sicherheit zahlen oder {2} mit einer Wahrscheinlichkeit von {0}?", "{1} € mit Sicherheit", "{2} € mit einer Wahrscheinlichkeit von {0}"],
+        [100, 200, "10 %", "Möchten Sie lieber {1} mit Sicherheit zahlen oder {2} mit einer Wahrscheinlichkeit von {0}?", "{1} € mit Sicherheit", "{2} € mit einer Wahrscheinlichkeit von {0}"],
+        [1500, 3000, "95 %", "Möchten Sie lieber {1} mit Sicherheit zahlen oder {2} mit einer Wahrscheinlichkeit von {0}?", "{1} € mit Sicherheit", "{2} € mit einer Wahrscheinlichkeit von {0}"],
+        [1500, 3000, "90 %", "Möchten Sie lieber {1} mit Sicherheit zahlen oder {2} mit einer Wahrscheinlichkeit von {0}?", "{1} € mit Sicherheit", "{2} € mit einer Wahrscheinlichkeit von {0}"],
+        [1500, 3000, "75 %", "Möchten Sie lieber {1} mit Sicherheit zahlen oder {2} mit einer Wahrscheinlichkeit von {0}?", "{1} € mit Sicherheit", "{2} € mit einer Wahrscheinlichkeit von {0}"],
+        [1500, 3000, "33 %", "Möchten Sie lieber {1} mit Sicherheit zahlen oder {2} mit einer Wahrscheinlichkeit von {0}?", "{1} € mit Sicherheit", "{2} € mit einer Wahrscheinlichkeit von {0}"],
+        [1500, 3000, "10 %", "Möchten Sie lieber {1} mit Sicherheit zahlen oder {2} mit einer Wahrscheinlichkeit von {0}?", "{1} € mit Sicherheit", "{2} € mit einer Wahrscheinlichkeit von {0}"]
     ]
 
 def get_questions() -> list[SurveyQuestion]:
@@ -226,27 +226,31 @@ def end_survey():
         logging.error(f"Missing session data: {session}")
         return redirect('/')
     
-    logging.debug(f'UUID[{session["uuid"]}]: End survey')
+    if request.method == 'POST':
+        logging.debug(f'UUID[{session["uuid"]}]: End survey')
 
-    # Insert demographic data into database
-    insert = """
-        INSERT INTO participants(uuid, age, gender, education, employment, income, saving) VALUES (?, ?, ?, ?, ?, ?, ?)
-    """
-    demographic = session['demographic']
-    cursor.execute(insert, (str(session['uuid']), demographic.get("age"), demographic.get("gender"), demographic.get("education"), demographic.get("employment"), demographic.get("income"), demographic.get("saving")))
-    db.commit()
+        # Insert demographic data into database
+        insert = """
+            INSERT INTO participants(uuid, age, gender, education, employment, income, saving) VALUES (?, ?, ?, ?, ?, ?, ?)
+        """
+        demographic = session['demographic']
+        cursor.execute(insert, (str(session['uuid']), demographic.get("age"), demographic.get("gender"), demographic.get("education"), demographic.get("employment"), demographic.get("income"), demographic.get("saving")))
 
-    # Insert answers into database
-    values = session['value']
-    question_groups = get_question_groups()
-    answers = [(str(session['uuid']), key, question_groups[key][3].format(question_groups[key][2], question_groups[key][0], question_groups[key][1]), values[key]) for key in values.keys()]
-    insert = """
-        INSERT INTO answers(uuid, question_group_id, question_group_string, value) VALUES (?, ?, ?, ?)
-    """
-    cursor.executemany(insert, answers)
-    db.commit()
+        # Insert answers into database
+        values = session['value']
+        question_groups = get_question_groups()
+        answers = [(str(session['uuid']), key, question_groups[key][3].format(question_groups[key][2], question_groups[key][0], question_groups[key][1]), values[key]) for key in values.keys()]
+        insert = """
+            INSERT INTO answers(uuid, question_group_id, question_group_string, value) VALUES (?, ?, ?, ?)
+        """
+        cursor.executemany(insert, answers)
+        db.commit()
     
     return render_template('end_survey.html')
+
+@app.route('/credits', methods=['GET'])
+def credits():
+    return render_template('credits.html')
 
 def init():
     # Create database
@@ -273,8 +277,9 @@ def init():
             FOREIGN KEY(uuid) REFERENCES participants(uuid)
         );
     """)
+    db.commit()
     pass
 
 if __name__ == '__main__':
     init()
-    app.run(host='0.0.0.0', port=80, debug=True)
+    app.run(host='127.0.0.1', port=5123, debug=True)

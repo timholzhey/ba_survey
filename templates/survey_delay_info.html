@@ -1,11 +1,24 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Umfrage</title>
+    {% include 'components/head.html' %}
 </head>
 <body>
-    <a href="survey_delay_question">Weiter</a>
+    {% include 'components/back-navigation.html' %}
+    <main>
+        <h1>Teil 1 - Verspätete Verluste</h1>
+        <hr>
+        <p class="info-text">
+            In diesem Teil der Studie werden Sie gebeten, mehrere hypothetische Entscheidungen über verschiedene Geldbeträge zu treffen, die Sie BEZAHLEN könnten. Es handelt sich demnach um VERLUSTE, welche Sie hypothetisch realisieren müssen.<br>
+            <br>
+            Mich interessiert, für welchen Betrag Sie sich entscheiden würden, wenn Ihnen diese Wahlmöglichkeiten TATSÄCHLICH angeboten werden würden. Es werden zwei Geldbeträge auf dem Bildschirm erscheinen. Ein Betrag kann SOFORT gezahlt werden. Der andere Betrag kann SPÄTER gezahlt werden. Der SOFORT-Betrag ändert sich nach jeder Ihrer Entscheidungen. Der spätere Geldbetrag bleibt für eine Gruppe von Entscheidungen gleich. Das heißt, dass Sie sich zwischen dem SOFORT-Betrag und dem SPÄTER-Betrag entscheiden sollen. ES GIBT KEINE RICHTIGEN ODER FALSCHEN ENTSCHEIDUNGEN.<br> 
+            <br>
+            Bitte lesen Sie sorgfältig und wählen Sie Ihre Antwort bedacht aus.
+        </p>
+        <form action="/survey_delay_question" method="post">
+            <input type="submit" value="WEITER">
+        </form>
+        {% include 'components/footer.html' %}
+    </main>
 </body>
 </html>

@@ -1,58 +1,62 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Umfrage</title>
+    {% include 'components/head.html' %}
 </head>
 <body>
-    <form action="/survey_demographic" method="post">
-        <div class="demographic-question">
-            <p>Wie alt sind Sie?</p>
-            <input type="text" name="age" pattern="[0-9]{1,2}" required="required">
-        </div>
-        <div class="demographic-question">
-            <p>Mit welchem Geschlecht identifizieren Sie sich?</p>
-            <select name="gender" required="required">
-                <option value="0">männlich</option>
-                <option value="1">weiblich</option>
-                <option value="2">divers</option>
-            </select>
-        </div>
-        <div class="demographic-question">
-            <p>Was ist Ihr höchster Bildungsabschluss?</p>
-            <select name="education" required="required">
-                <option value="0">kein Abschluss</option>
-                <option value="1">Hauptschulabschluss</option>
-                <option value="2">Realschulabschluss</option>
-                <option value="3">Abitur</option>
-                <option value="4">Bachelor</option>
-                <option value="5">Master</option>
-                <option value="6">Doktor</option>
-            </select>
-        </div>
-        <div class="demographic-question">
-            <p>Wie ist Ihr aktueller Beschäftigungsstatus?</p>
-            <select name="employment" required="required">
-                <option value="0">arbeitslos</option>
-                <option value="1">in Ausbildung/Studium</option>
-                <option value="2">in Ausbildung/Studium mit Nebenbeschäftigung (z.B. Werkstudent*in)</option>
-                <option value="3">Teilzeit</option>
-                <option value="4">Vollzeit</option>
-            </select>
-        </div>
-        <div class="demographic-question">
-            <p>Was ist Ihr durchschnittliches monatliches Nettoeinkommen?</p>
-            <input type="text" name="income" pattern="[0-9]{1,6}" required="required">
-        </div>
-        <div class="demographic-question">
-            <p>Haben Sie die Möglichkeit zu Sparen?</p>
-            <select name="saving" required="required">
-                <option value="0">nein</option>
-                <option value="1">ja</option>
-            </select>
-        </div>
-        <input type="submit" />
-    </form>
+    {% include 'components/back-navigation.html' %}
+    <main>
+        <h1>Umfrage: Delay and probability discounting</h1>
+        <hr>
+        <form action="/survey_demographic" method="post">
+            <div class="demographic-question">
+                <p>Wie alt sind Sie?</p>
+                <input type="text" name="age" pattern="[0-9]{1,2}" required="required" autocomplete="off" autofocus>
+            </div>
+            <div class="demographic-question">
+                <p>Mit welchem Geschlecht identifizieren Sie sich?</p>
+                <select name="gender" required="required">
+                    <option value="0">männlich</option>
+                    <option value="1">weiblich</option>
+                    <option value="2">divers</option>
+                </select>
+            </div>
+            <div class="demographic-question">
+                <p>Was ist Ihr höchster Bildungsabschluss?</p>
+                <select name="education" required="required">
+                    <option value="0">kein Abschluss</option>
+                    <option value="1">Hauptschulabschluss</option>
+                    <option value="2">Realschulabschluss</option>
+                    <option value="3">Abitur</option>
+                    <option value="4">Bachelor</option>
+                    <option value="5">Master</option>
+                    <option value="6">Doktor</option>
+                </select>
+            </div>
+            <div class="demographic-question">
+                <p>Wie ist Ihr aktueller Beschäftigungsstatus?</p>
+                <select name="employment" required="required">
+                    <option value="0">arbeitslos</option>
+                    <option value="1">in Ausbildung/Studium</option>
+                    <option value="2">in Ausbildung/Studium mit Nebenbeschäftigung (z.B. Werkstudent*in)</option>
+                    <option value="3">Teilzeit</option>
+                    <option value="4">Vollzeit</option>
+                </select>
+            </div>
+            <div class="demographic-question">
+                <p>Was ist Ihr durchschnittliches monatliches Nettoeinkommen?</p>
+                <input type="text" name="income" pattern="[0-9]{1,6}" required="required" autocomplete="off">
+            </div>
+            <div class="demographic-question">
+                <p>Haben Sie die Möglichkeit zu Sparen?</p>
+                <select name="saving" required="required">
+                    <option value="0">nein</option>
+                    <option value="1">ja</option>
+                </select>
+            </div>
+            <input type="submit" value="WEITER">
+        </form>
+    </main>
+    {% include 'components/footer.html' %}
 </body>
 </html>
