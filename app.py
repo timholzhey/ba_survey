@@ -161,6 +161,11 @@ def survey():
         if 'question_id' not in request.form or 'question_group' not in request.form or 'answer_option_id' not in request.form or request.form['question_id'].isnumeric() == False or request.form['answer_option_id'].isnumeric() == False or request.form['question_group'].isnumeric() == False:
             logging.error(f'UUID[{session["uuid"]}]: Invalid POST request: {request.form}')
             return redirect(request.url)
+        
+        # Check if ID is old and discard
+        if int(request.form['question_id']) < session['question_id']:
+            logging.debug(f'UUID[{session["uuid"]}]: Discarded old question {request.form["question_id"]}')
+            return redirect(request.url)
             
         question_group = int(request.form['question_group'])
         question_id = int(request.form['question_id'])
