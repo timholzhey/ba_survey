@@ -5,22 +5,26 @@
 </head>
 <body>
     <main>
-        <h1>Umfrage: Delay and probability discounting</h1>
+        <div class="logo">
+            <img src="/static/fu_logo.png" alt="Freie Universität Berlin" width="300px">
+        </div>
+        <h1>Umfrage im Bereich der Verhaltensökonomie</h1>
         <hr>
         <p class="info-text">
-            Herzlich Wilkommen zu der Studie bezüglich meiner Bachelorarbeit<br>
+            Herzlich Wilkommen! Mein Name ist Bruno Brero und dies ist eine Studie bezüglich meiner Bachelorarbeit, welche den Umgang mit monetären Verlusten untersucht.<br>
             <br>
-            Die Umfrage dauert ungefähr 8 Minuten. Ich bitte Sie die Fragen genau durchzulesen und die Umfrage nicht während der Durchführung abzubrechen. Außerdem bitte ich Sie, keine unüberdachten Antworten anzugeben.<br>
+            Die Umfrage dauert ungefähr <b>8 Minuten</b> und beinhaltet viele, aber sehr schnell zu beantwortende Fragen. Ich bitte Sie die Fragen genau durchzulesen und die Umfrage nicht während der Durchführung abzubrechen und keine unüberdachten Antworten anzugeben.<br>
+            Bitte beachten Sie vor allem die blauen Hinweiskästchen.<br>
             Die Umfrage sieht keine Vergütung vor.<br>
             Die Daten werden nur im Rahmen der Bachelorarbeit ausgewertet.<br>
-            Die Umfrage ist anonym.<br>
+            Die Umfrage ist <b>anonym</b>.<br>
             <br>
             Vielen Dank für die Teilnahme!
         </p>
         <form action="/start_survey" method="post">
             <input type="submit" value="START">
         </form>
-        {% include 'components/footer.html' %}
     </main>
+    {% include 'components/footer.html' %}
 </body>
 </html>

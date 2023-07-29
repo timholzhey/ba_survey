@@ -8,12 +8,201 @@
         <h1>Ende der Umfrage</h1>
         <hr>
         <p class="info-text">
-            Danke für Ihre Teilnahme!
+            Danke für Ihre Teilnahme!<br>
+            <br>
+            Sollten sich Fragen bzgl. der Umfrage ergeben, können Sie sich gerne an mich wenden: <u><a href="mailto:b.brero@fu-berlin.de">b.brero@fu-berlin.de</a></u><br>
         </p>
         <form action="/" method="get">
             <input type="submit" value="ZUM ANFANG">
         </form>
-        {% include 'components/footer.html' %}
+        <p class="info-text">
+            Für die Interessierten, hier die Grafiken Ihres Diskontierungsverhaltens:
+        </p>
+        <canvas id="canvas" width="2000" height="1000"></canvas>
     </main>
+    {% include 'components/footer.html' %}
+    <script>
+        const results = {{ results|safe }};
+        const numResults = Object.keys(results).length;
+        const pointsPerGraph = 5;
+        const canvas = document.getElementById("canvas");
+        const ctx = canvas.getContext("2d");
+
+        // On resize, scale canvas to fit
+        window.addEventListener("resize", () => {
+            fitCanvas();
+            drawCanvas();
+        });
+        function fitCanvas() {
+            canvas.style.width = "100%";
+            canvas.style.height = "100%";
+            canvas.width = canvas.offsetWidth;
+            canvas.height = canvas.offsetHeight;
+        }
+
+        // Populate values
+        let graphValues = [];
+        for (let group in results) {
+            let numGraph = Math.floor(group / pointsPerGraph);
+            let value = results[group];
+            if (graphValues[numGraph] === undefined) {
+                graphValues[numGraph] = [];
+            }
+            graphValues[numGraph].push(value);
+        }
+
+        const padding = 30;
+        const numGraphs = 4;
+        const yOffset = 20;
+
+        function drawCanvas() {
+            if (window.innerWidth > 600) {
+                for (let i = 0; i < numGraphs; i++) {
+                    let x = padding + (i * (canvas.width / numGraphs));
+                    let y = padding + yOffset;
+                    let width = (canvas.width / numGraphs) - (2 * padding);
+                    let height = canvas.height - (2 * padding);
+                    if (width > height) {
+                        width = height;
+                    } else {
+                        height = width;
+                    }
+                    drawGraph(x, y, width, height, graphValues[i], i);
+                }
+            } else {
+                for (let i = 0; i < numGraphs; i++) {
+                    let x = padding + ((i % 2) * (canvas.width / 2));
+                    let y = padding + (Math.floor(i / 2) * (canvas.height / 2)) + yOffset;
+                    let width = (canvas.width / 2) - (2 * padding);
+                    let height = (canvas.height / 2) - (2 * padding);
+                    if (width > height) {
+                        width = height;
+                    } else {
+                        height = width;
+                    }
+                    drawGraph(x, y, width, height, graphValues[i], i);
+                }
+            }
+        }
+
+        function drawGraph(x, y, width, height, values, index) {
+            const yValuesMax = [200, 3000, 200, 3000];
+            const xValuesDelay = [1, 6, 12, 60, 120];
+            const xValuesProbability = [0.0526315789474, 0.1111111111111, 0.3333333333333, 2.030303030303, 9];
+            const isDelayGraph = index < numGraphs / 2;
+            const xValues = isDelayGraph ? xValuesDelay : xValuesProbability;
+
+            ctx.beginPath();
+            ctx.rect(x, y, width, height);
+            ctx.stroke();
+
+            // Draw labels
+            const graphLabels = ["200 € (Loss)", "3000 € (Loss)", "200 € (Loss)", "3000 € (Loss)"];
+            ctx.font = "12px OpenSans";
+            ctx.fillStyle = "#000000";
+            ctx.textAlign = "center";
+            ctx.fillText(graphLabels[index], x + width / 2, y - 13);
+
+            // Draw x axis description
+            const xAxisDescriptions = ["Delay (months)", "Odds against (%)"];
+            ctx.font = "10px OpenSans";
+            ctx.fillStyle = "#000000";
+            ctx.textAlign = "center";
+            ctx.fillText(xAxisDescriptions[isDelayGraph ? 0 : 1], x + width / 2, y + height + 35);
+
+            const maxXValue = Math.max(...xValues);
+            const maxYValue = yValuesMax[index];
+
+            const innerPadding = 10;
+            drawAxisDivisions(x, y, width, height, x + innerPadding, y + innerPadding, width - (2 * innerPadding), height - (2 * innerPadding), maxXValue, maxYValue);
+
+            if (values == undefined) {
+                return;
+            }
+
+            for (let i = 0; i < values.length; i++) {
+                fillGraph(x + innerPadding, y + innerPadding, width - (2 * innerPadding), height - (2 * innerPadding), values, maxXValue, maxYValue, xValues, i);
+            }
+        }
+
+        function drawAxisDivisions(x, y, width, height, xInner, yInner, widthInner, heightInner, maxXValue, maxYValue) {
+            const devideAxis = 5;
+            const xAxisStepInner = widthInner / devideAxis;
+            const yAxisStepInner = heightInner / devideAxis;
+            const xAxisStepOuter = width / devideAxis;
+            const yAxisStepOuter = height / devideAxis;
+
+            const xAxisValues = [];
+            const yAxisValues = [];
+            for (let i = 0; i <= devideAxis; i++) {
+                xAxisValues.push(Math.round(i * (maxXValue / devideAxis)));
+                yAxisValues.push(Math.round(i * (maxYValue / devideAxis)));
+            }
+
+            ctx.beginPath();
+            ctx.strokeStyle = "#000000";
+            ctx.lineWidth = 1;
+            ctx.font = "10px OpenSans";
+            ctx.fillStyle = "#000000";
+            ctx.textAlign = "center";
+            ctx.textBaseline = "middle";
+            
+            // Draw x axis
+            for (let i = 0; i <= devideAxis; i++) {
+                const xPositionInner = xInner + (i * xAxisStepInner);
+                const xPositionOuter = x + (i * xAxisStepOuter);
+                const yPositionInner = yInner + heightInner;
+                const yPositionOuter = y + height;
+                ctx.textAlign = "center";
+                ctx.fillText(xAxisValues[i], xPositionInner, yPositionOuter + 15);
+                ctx.moveTo(xPositionInner, yPositionOuter + 5);
+                ctx.lineTo(xPositionInner, yPositionOuter);
+                ctx.stroke();
+            }
+
+            // Draw y axis
+            for (let i = 0; i <= devideAxis; i++) {
+                const xPositionInner = xInner;
+                const xPositionOuter = x;
+                const yPositionInner = yInner + heightInner - (i * yAxisStepInner);
+                const yPositionOuter = y + height - (i * yAxisStepOuter);
+                ctx.textAlign = "right";
+                ctx.fillText(yAxisValues[i], xPositionOuter - 10, yPositionInner);
+                ctx.moveTo(xPositionOuter - 5, yPositionInner);
+                ctx.lineTo(xPositionOuter, yPositionInner);
+                ctx.stroke();
+            }
+
+            ctx.closePath();
+        }
+
+        function fillGraph(x, y, width, height, values, maxXValue, maxYValue, xValues, index) {
+            for (let i = 0; i < values.length; i++) {
+                const xValue = xValues[i];
+                const yValue = values[i];
+                const xPosition = x + (xValue / maxXValue) * width;
+                const yPosition = y + height - ((yValue / maxYValue) * height);
+                const radius = 3;
+                ctx.beginPath();
+                ctx.fillStyle = "#ffffff";
+                ctx.strokeStyle = "#000000";
+                ctx.lineWidth = 2;
+                ctx.arc(xPosition, yPosition, radius, 0, Math.PI * 2);
+                ctx.stroke();
+                ctx.fill();
+                if (i > 0) {
+                    const xPositionPrev = x + (xValues[i - 1] / maxXValue) * width;
+                    const yPositionPrev = y + height - ((values[i - 1] / maxYValue) * height);
+                    ctx.beginPath();
+                    ctx.moveTo(xPositionPrev, yPositionPrev);
+                    ctx.lineTo(xPosition, yPosition);
+                    ctx.stroke();
+                }
+            }
+        }
+
+        fitCanvas();
+        drawCanvas();
+    </script>
 </body>
 </html>

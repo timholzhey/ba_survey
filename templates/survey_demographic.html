@@ -11,7 +11,7 @@
         <form action="/survey_demographic" method="post">
             <div class="demographic-question">
                 <p>Wie alt sind Sie?</p>
-                <input type="text" name="age" pattern="[0-9]{1,2}" required="required" autocomplete="off" autofocus>
+                <input type="text" name="age" pattern="[0-9]{1,2}" inputmode="numeric" required="required" autocomplete="off" autofocus>
             </div>
             <div class="demographic-question">
                 <p>Mit welchem Geschlecht identifizieren Sie sich?</p>
@@ -45,11 +45,18 @@
             </div>
             <div class="demographic-question">
                 <p>Was ist Ihr durchschnittliches monatliches Nettoeinkommen?</p>
-                <input type="text" name="income" pattern="[0-9]{1,6}" required="required" autocomplete="off">
+                <input type="text" name="income" pattern="[0-9]{1,6}" inputmode="numeric" required="required" autocomplete="off">
             </div>
             <div class="demographic-question">
                 <p>Haben Sie die Möglichkeit zu Sparen?</p>
                 <select name="saving" required="required">
+                    <option value="0">nein</option>
+                    <option value="1">ja</option>
+                </select>
+            </div>
+            <div class="demographic-question">
+                <p>Haben Sie aktuell Schulden?</p>
+                <select name="debt" required="required">
                     <option value="0">nein</option>
                     <option value="1">ja</option>
                 </select>
