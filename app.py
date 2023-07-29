@@ -120,6 +120,7 @@ def start_survey():
     session['answers'] = {}
     session['delay'] = {}
     session['value'] = {}
+    init()
 
     logging.debug(f'UUID[{session["uuid"]}]: Start survey')
 
