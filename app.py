@@ -34,9 +34,10 @@ class SurveyAnswerFilter:
         return f'{self.question_id} == {self.answer_option_id}'
 
 class SurveyQuestion:
-    def __init__(self, group: int, id: int, question: str, answer_options: list[SurveyAnswerOption], filter: SurveyAnswerFilter, meta: int = 0, info: str = ""):
+    def __init__(self, group: int, id: int, depth: int, question: str, answer_options: list[SurveyAnswerOption], filter: SurveyAnswerFilter, meta: int = 0, info: str = ""):
         self.group = group
         self.id = id
+        self.depth = depth
         self.question = question
         self.answer_options = answer_options
         self.filter = filter
@@ -98,6 +99,7 @@ def get_questions() -> list[SurveyQuestion]:
                 questions.append(SurveyQuestion(
                     group,
                     id,
+                    depth,
                     f'{group+1}.{depth+1} {question_string}',
                     [
                         SurveyAnswerOption(0, low, opt1.format(change, low, high)),
@@ -227,7 +229,8 @@ def survey():
         return redirect('/end_survey', code=307)
     
     question = questions[id]
-    return render_template('survey_delay_question.html', question=question)
+    progress = question.group / len(get_question_groups()) * 100 + question.depth
+    return render_template('survey_delay_question.html', question=question, progress=progress)
 
 @app.route('/end_survey', methods=['GET', 'POST'])
 def end_survey():

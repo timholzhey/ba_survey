@@ -19,6 +19,9 @@
             </div>
         </form>
     </main>
+    <div class="progress-bar">
+        <div class="progress-bar-fill" style="width: {{ progress }}%"></div>
+    </div>
     {% include 'components/footer.html' %}
     <script>
         document.querySelectorAll(".form-list-item").forEach(

@@ -200,6 +200,26 @@ input[type=radio] {
     height: 100vh;
 }
 
+.progress-bar {
+    width: clamp(1000px, 70%, 100%);
+    max-width: calc(100% - 2em);
+    height: 5px;
+    background-color: var(--seconday-background-color);
+    border-radius: 0.25em;
+    margin: auto 1em 1em 1em;
+    position: relative;
+}
+
+.progress-bar-fill {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    background-color: var(--primary-text-color);
+    border-radius: 0.25em;
+    transition: width 0.2s ease-out;
+}
+
 @media only screen and (max-width: 1199px) {
     .back-navigation {
         right: 0;
