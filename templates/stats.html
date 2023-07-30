@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    {% include 'components/head.html' %}
+</head>
+<body>
+    <main>
+        <div class="logo">
+            <img src="/static/fu_logo.png" alt="Freie Universität Berlin" width="300px">
+        </div>
+        <h1>Umfrage im Bereich der Verhaltensökonomie</h1>
+        <hr>
+        <p class="info-text">
+            Anzahl der Teilnehmer: {{ stats.num_participants }}<br>
+            Davon vollständig ausgefüllt: {{ stats.num_completed }}<br>
+            Davon heute ausgefüllt: {{ stats.num_completed_today }}<br>
+            Letzte Teilnahme: {{ stats.last_participation }} (Vor {{ stats.last_participation_hours_ago }} Stunden)<br>
+        </p>
+        <canvas id="participants" width="2000" height="1000"></canvas>
+    </main>
+    {% include 'components/footer.html' %}
+    <script>
+        const timestamps = {{ stats.completed_timestamps|tojson }};
+        const canvas = document.getElementById("participants");
+        const ctx = canvas.getContext("2d");
+        
+        // On resize, scale canvas to fit
+        window.addEventListener("resize", () => {
+            fitCanvas();
+            drawCanvas();
+        });
+        function fitCanvas() {
+            canvas.style.width = "100%";
+            canvas.style.height = "100%";
+            canvas.width = canvas.offsetWidth;
+            canvas.height = canvas.offsetHeight;
+            if (canvas.height > canvas.width) {
+                canvas.height = canvas.width;
+            }
+        }
+
+        // get number of participants per day
+        let numParticipantsPerDay = {};
+        for (let timestamp of timestamps) {
+            let date = new Date(timestamp);
+            let day = date.toISOString().split("T")[0];
+            if (numParticipantsPerDay[day] === undefined) {
+                numParticipantsPerDay[day] = 0;
+            }
+            numParticipantsPerDay[day]++;
+        }
+
+        // get min and max day
+        let minDay = new Date();
+        let maxDay = new Date();
+        for (let day in numParticipantsPerDay) {
+            let date = new Date(day);
+            if (date < minDay) {
+                minDay = date;
+            }
+            if (date > maxDay) {
+                maxDay = date;
+            }
+        }
+
+        // get number of days between min and max day
+        let numDays = Math.ceil((maxDay - minDay) / (1000 * 60 * 60 * 24));
+
+        // get max number of participants per day
+        let maxParticipantsPerDay = 0;
+        for (let day in numParticipantsPerDay) {
+            if (numParticipantsPerDay[day] > maxParticipantsPerDay) {
+                maxParticipantsPerDay = numParticipantsPerDay[day];
+            }
+        }
+
+        const padding = 50;
+
+        function drawCanvas() {
+                // draw not filled rectangle
+                ctx.strokeStyle = "black";
+                ctx.lineWidth = 1;
+                ctx.strokeRect(padding, padding, canvas.width - 2 * padding, canvas.height - 2 * padding);
+
+                // draw x-axis labels
+                ctx.font = "12px Arial";
+                ctx.textAlign = "center";
+                ctx.textBaseline = "top";
+                for (let i = 0; i <= numDays; i++) {
+                    let day = new Date(minDay.getTime() + i * 1000 * 60 * 60 * 24);
+                    let dayString = day.toISOString().split("T")[0];
+                    let x = padding + i * (canvas.width - 2 * padding) / numDays;
+                    if (ctx.measureText(dayString).width < (canvas.width - 2 * padding) / numDays) {
+                        ctx.fillText(dayString, x, canvas.height - padding + 10);
+                    }
+                    ctx.beginPath();
+                    ctx.moveTo(x, canvas.height - padding + 5);
+                    ctx.lineTo(x, canvas.height - padding);
+                    ctx.stroke();
+                }
+
+                // draw y-axis labels
+                ctx.textAlign = "right";
+                ctx.textBaseline = "middle";
+                for (let i = 0; i <= maxParticipantsPerDay; i++) {
+                    let y = canvas.height - padding - i * (canvas.height - 2 * padding) / maxParticipantsPerDay;
+                    ctx.fillText(i, padding - 10, y);
+                    ctx.beginPath();
+                    ctx.moveTo(padding - 5, y);
+                    ctx.lineTo(padding, y);
+                    ctx.stroke();
+                }
+
+                // draw points
+                ctx.fillStyle = "black";
+                for (let day in numParticipantsPerDay) {
+                    let date = new Date(day);
+                    let x = padding + (date - minDay) / (1000 * 60 * 60 * 24) * (canvas.width - 2 * padding) / numDays;
+                    let y = canvas.height - padding - numParticipantsPerDay[day] * (canvas.height - 2 * padding) / maxParticipantsPerDay;
+                    ctx.beginPath();
+                    ctx.arc(x, y, 5, 0, 2 * Math.PI);
+                    ctx.fill();
+                }
+
+                // draw lines
+                ctx.strokeStyle = "black";
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                for (let day in numParticipantsPerDay) {
+                    let date = new Date(day);
+                    let x = padding + (date - minDay) / (1000 * 60 * 60 * 24) * (canvas.width - 2 * padding) / numDays;
+                    let y = canvas.height - padding - numParticipantsPerDay[day] * (canvas.height - 2 * padding) / maxParticipantsPerDay;
+                    ctx.lineTo(x, y);
+                }
+                ctx.stroke();
+        }
+
+        fitCanvas();
+        drawCanvas();
+    </script>
+</body>
+</html>

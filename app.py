@@ -4,6 +4,7 @@ import uuid
 import logging
 import sqlite3 as sl
 import math
+from datetime import datetime
 
 app = Flask(__name__)
 app.config["SESSION_PERMANENT"] = False
@@ -257,6 +258,38 @@ def end_survey():
         return redirect('/end_survey')
     
     return render_template('end_survey.html', results=session['value'])
+
+@app.route('/stats', methods=['GET'])
+def stats():
+    cursor.execute("SELECT COUNT(*) FROM participants")
+    num_participants = cursor.fetchone()[0]
+
+    cursor.execute("SELECT COUNT(*) FROM (SELECT uuid, COUNT(*) FROM answers GROUP BY uuid HAVING COUNT(*) = ?)", (len(get_question_groups()),))
+    num_completed = cursor.fetchone()[0]
+
+    cursor.execute("SELECT created_at FROM participants ORDER BY created_at DESC LIMIT 1")
+    last_participation = cursor.fetchone()[0]
+
+    cursor.execute("SELECT DATETIME('now')")
+    time_now = cursor.fetchone()[0]
+    last_participation_hours_ago = round((datetime.strptime(time_now, '%Y-%m-%d %H:%M:%S') - datetime.strptime(last_participation, '%Y-%m-%d %H:%M:%S')).total_seconds() / 3600, 2)
+
+    cursor.execute("SELECT COUNT(*) FROM participants WHERE created_at >= DATE('now')")
+    num_completed_today = cursor.fetchone()[0]
+
+    cursor.execute("SELECT created_at FROM participants WHERE uuid IN (SELECT uuid FROM (SELECT uuid, COUNT(*) FROM answers GROUP BY uuid HAVING COUNT(*) = ?))", (len(get_question_groups()),))
+    completed_timestamps = cursor.fetchall()
+
+    stats = {
+        'num_participants': num_participants,
+        'num_completed': num_completed,
+        'last_participation': last_participation,
+        'last_participation_hours_ago': last_participation_hours_ago,
+        'num_completed_today': num_completed_today,
+        'completed_timestamps': completed_timestamps
+    }
+
+    return render_template('stats.html', stats=stats)
 
 @app.route('/credits', methods=['GET'])
 def credits():
