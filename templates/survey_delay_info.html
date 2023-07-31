@@ -6,10 +6,11 @@
 <body>
     {% include 'components/back-navigation.html' %}
     <main>
+        {% if id == 0 %}
         <h1>Teil 1 - Verspätete Verluste</h1>
         <hr>
         <p class="info-text">
-            In diesem Teil der Studie werden Sie gebeten, mehrere hypothetische Entscheidungen über verschiedene Geldbeträge zu treffen, die Sie <b>BEZAHLEN</b> könnten. Es handelt sich demnach um VERLUSTE, welche Sie hypothetisch realisieren müssen.<br>
+            In diesem Teil der Studie werden Sie gebeten, mehrere <b>hypothetische</b> Entscheidungen über verschiedene Geldbeträge zu treffen, die Sie <b>BEZAHLEN</b> könnten. Es handelt sich demnach um VERLUSTE, welche Sie hypothetisch realisieren müssen.<br>
             <br>
             Mich interessiert, für welchen Betrag Sie sich entscheiden würden, wenn Ihnen diese Wahlmöglichkeiten TATSÄCHLICH angeboten werden würden. Es werden zwei Geldbeträge auf dem Bildschirm erscheinen. Ein Betrag kann <b>SOFORT gezahlt</b> werden. Der andere Betrag kann <b>SPÄTER gezahlt</b> werden. Der SOFORT-Betrag ändert sich nach jeder Ihrer Entscheidungen. Der spätere Geldbetrag bleibt für eine Gruppe von Entscheidungen gleich. <br>
             <br>
@@ -17,6 +18,19 @@
             <br>
             Bitte lesen Sie sorgfältig und wählen Sie Ihre Antwort bedacht aus.
         </p>
+        {% else %}
+        <h1>Teil 2 - Wahrscheinliche Verluste</h1>
+        <hr>
+        <p class="info-text">
+            In diesem Teil der Studie werden Sie gebeten, mehrere <b>hypothetische</b> Entscheidungen über verschiedene Geldbeträge zu treffen, die Sie <b>BEZAHLEN</b> könnten. Es handelt sich demnach um VERLUSTE, welche Sie hypothetisch realisieren müssen.<br>
+            <br>
+            Mich interessiert, für welchen Betrag Sie sich entscheiden würden, wenn Ihnen diese Wahlmöglichkeiten TATSÄCHLICH angeboten werden würden. Es werden zwei Geldbeträge auf dem Bildschirm erscheinen. Ein Betrag kann <b>mit SICHERHEIT gezahlt</b> werden. Der andere Betrag <b>KÖNNTE gezahlt</b> werden, ansonsten müssen Sie nichts zahlen. Der SICHER-Betrag ändert sich nach jeder Ihrer Entscheidungen. Der andere Geldbetrag bleibt für eine Gruppe von Entscheidungen gleich. <br>
+            <br>
+            Das heißt, dass Sie sich zwischen dem SICHER-Betrag und dem anderen Betrag entscheiden sollen. ES GIBT KEINE RICHTIGEN ODER FALSCHEN ENTSCHEIDUNGEN.<br> 
+            <br>
+            Bitte lesen Sie sorgfältig und wählen Sie Ihre Antwort bedacht aus.
+        </p>
+        {% endif %}
         <form action="/survey_delay_question" method="post">
             <input type="submit" value="WEITER">
         </form>

@@ -34,7 +34,7 @@ class SurveyAnswerFilter:
         return f'{self.question_id} == {self.answer_option_id}'
 
 class SurveyQuestion:
-    def __init__(self, group: int, id: int, depth: int, question: str, answer_options: list[SurveyAnswerOption], filter: SurveyAnswerFilter, meta: int = 0, info: str = ""):
+    def __init__(self, group: int, id: int, depth: int, question: str, answer_options: list[SurveyAnswerOption], filter: SurveyAnswerFilter, meta: int = 0, info: str = "", redirect: str = ""):
         self.group = group
         self.id = id
         self.depth = depth
@@ -43,37 +43,38 @@ class SurveyQuestion:
         self.filter = filter
         self.meta = meta
         self.info = info
+        self.redirect = redirect
     
     def __str__(self):
         return f'{self.id}: {self.question} [{", ".join([str(answer_option) for answer_option in self.answer_options])}], {self.filter}, {self.meta}'
 
 def get_question_groups() -> list[list]:
     return [
-        [100, 200, "1 Monat", "", "Möchten Sie lieber in {0} {1} € zahlen oder {2} € jetzt?", "{1} € jetzt", "{2} € in {0}", "Entscheiden Sie sich zwischen dem Betrag, den Sie <b>jetzt zahlen</b> müssen, oder {2} € die Sie <b>in {0} zahlen</b> müssen."],
-        [100, 200, "6 Monaten", "", "Möchten Sie lieber in {0} {1} € zahlen oder {2} € jetzt?", "{1} € jetzt", "{2} € in {0}", "Entscheiden Sie sich zwischen dem Betrag, den Sie <b>jetzt zahlen</b> müssen, oder {2} € die Sie <b>in {0} zahlen</b> müssen."],
-        [100, 200, "1 Jahr", "", "Möchten Sie lieber in {0} {1} € zahlen oder {2} € jetzt?", "{1} € jetzt", "{2} € in {0}", "Entscheiden Sie sich zwischen dem Betrag, den Sie <b>jetzt zahlen</b> müssen, oder {2} € die Sie <b>in {0} zahlen</b> müssen."],
-        [100, 200, "5 Jahren", "", "Möchten Sie lieber in {0} {1} € zahlen oder {2} € jetzt?", "{1} € jetzt", "{2} € in {0}", "Entscheiden Sie sich zwischen dem Betrag, den Sie <b>jetzt zahlen</b> müssen, oder {2} € die Sie <b>in {0} zahlen</b> müssen."],
-        [100, 200, "10 Jahren", "", "Möchten Sie lieber in {0} {1} € zahlen oder {2} € jetzt?", "{1} € jetzt", "{2} € in {0}", "Entscheiden Sie sich zwischen dem Betrag, den Sie <b>jetzt zahlen</b> müssen, oder {2} € die Sie <b>in {0} zahlen</b> müssen."],
-        [1500, 3000, "1 Monat", "", "Möchten Sie lieber in {0} {1} € zahlen oder {2} € jetzt?", "{1} € jetzt", "{2} € in {0}", "Entscheiden Sie sich zwischen dem Betrag, den Sie <b>jetzt zahlen</b> müssen, oder {2} € die Sie <b>in {0} zahlen</b> müssen."],
-        [1500, 3000, "6 Monaten", "", "Möchten Sie lieber in {0} {1} € zahlen oder {2} € jetzt?", "{1} € jetzt", "{2} € in {0}", "Entscheiden Sie sich zwischen dem Betrag, den Sie <b>jetzt zahlen</b> müssen, oder {2} € die Sie <b>in {0} zahlen</b> müssen."],
-        [1500, 3000, "1 Jahr", "", "Möchten Sie lieber in {0} {1} € zahlen oder {2} € jetzt?", "{1} € jetzt", "{2} € in {0}", "Entscheiden Sie sich zwischen dem Betrag, den Sie <b>jetzt zahlen</b> müssen, oder {2} € die Sie <b>in {0} zahlen</b> müssen."],
-        [1500, 3000, "5 Jahren", "", "Möchten Sie lieber in {0} {1} € zahlen oder {2} € jetzt?", "{1} € jetzt", "{2} € in {0}", "Entscheiden Sie sich zwischen dem Betrag, den Sie <b>jetzt zahlen</b> müssen, oder {2} € die Sie <b>in {0} zahlen</b> müssen."],
-        [1500, 3000, "10 Jahren", "", "Möchten Sie lieber in {0} {1} € zahlen oder {2} € jetzt?", "{1} € jetzt", "{2} € in {0}", "Entscheiden Sie sich zwischen dem Betrag, den Sie <b>jetzt zahlen</b> müssen, oder {2} € die Sie <b>in {0} zahlen</b> müssen."],
-        [100, 200, "95 %", "5 %", "Möchten Sie lieber {2} € mit Sicherheit zahlen oder {1} € mit einer Wahrscheinlichkeit von {0}?", "{1} € mit Sicherheit", "{2} € zu {0}", "Entscheiden Sie sich zwischen dem Betrag, den Sie <b>mit Sicherheit zahlen</b> müssen, oder {2} € die Sie <b>mit einer Wahrscheinlichkeit von {0} zahlen</b> müssen (d.h. zu {3} müssen Sie nichts zahlen)."],
-        [100, 200, "90 %", "10 %", "Möchten Sie lieber {2} € mit Sicherheit zahlen oder {1} € mit einer Wahrscheinlichkeit von {0}?", "{1} € mit Sicherheit", "{2} € zu {0}", "Entscheiden Sie sich zwischen dem Betrag, den Sie <b>mit Sicherheit zahlen</b> müssen, oder {2} € die Sie <b>mit einer Wahrscheinlichkeit von {0} zahlen</b> müssen (d.h. zu {3} müssen Sie nichts zahlen)."],
-        [100, 200, "75 %", "25 %", "Möchten Sie lieber {2} € mit Sicherheit zahlen oder {1} € mit einer Wahrscheinlichkeit von {0}?", "{1} € mit Sicherheit", "{2} € zu {0}", "Entscheiden Sie sich zwischen dem Betrag, den Sie <b>mit Sicherheit zahlen</b> müssen, oder {2} € die Sie <b>mit einer Wahrscheinlichkeit von {0} zahlen</b> müssen (d.h. zu {3} müssen Sie nichts zahlen)."],
-        [100, 200, "33 %", "67 %", "Möchten Sie lieber {2} € mit Sicherheit zahlen oder {1} € mit einer Wahrscheinlichkeit von {0}?", "{1} € mit Sicherheit", "{2} € zu {0}", "Entscheiden Sie sich zwischen dem Betrag, den Sie <b>mit Sicherheit zahlen</b> müssen, oder {2} € die Sie <b>mit einer Wahrscheinlichkeit von {0} zahlen</b> müssen (d.h. zu {3} müssen Sie nichts zahlen)."],
-        [100, 200, "10 %", "90 %", "Möchten Sie lieber {2} € mit Sicherheit zahlen oder {1} € mit einer Wahrscheinlichkeit von {0}?", "{1} € mit Sicherheit", "{2} € zu {0}", "Entscheiden Sie sich zwischen dem Betrag, den Sie <b>mit Sicherheit zahlen</b> müssen, oder {2} € die Sie <b>mit einer Wahrscheinlichkeit von {0} zahlen</b> müssen (d.h. zu {3} müssen Sie nichts zahlen)."],
-        [1500, 3000, "95 %", "5 %", "Möchten Sie lieber {2} € mit Sicherheit zahlen oder {1} € mit einer Wahrscheinlichkeit von {0}?", "{1} € mit Sicherheit", "{2} € zu {0}", "Entscheiden Sie sich zwischen dem Betrag, den Sie <b>mit Sicherheit zahlen</b> müssen, oder {2} € die Sie <b>mit einer Wahrscheinlichkeit von {0} zahlen</b> müssen (d.h. zu {3} müssen Sie nichts zahlen)."],
-        [1500, 3000, "90 %", "10 %", "Möchten Sie lieber {2} € mit Sicherheit zahlen oder {1} € mit einer Wahrscheinlichkeit von {0}?", "{1} € mit Sicherheit", "{2} € zu {0}", "Entscheiden Sie sich zwischen dem Betrag, den Sie <b>mit Sicherheit zahlen</b> müssen, oder {2} € die Sie <b>mit einer Wahrscheinlichkeit von {0} zahlen</b> müssen (d.h. zu {3} müssen Sie nichts zahlen)."],
-        [1500, 3000, "75 %", "25 %", "Möchten Sie lieber {2} € mit Sicherheit zahlen oder {1} € mit einer Wahrscheinlichkeit von {0}?", "{1} € mit Sicherheit", "{2} € zu {0}", "Entscheiden Sie sich zwischen dem Betrag, den Sie <b>mit Sicherheit zahlen</b> müssen, oder {2} € die Sie <b>mit einer Wahrscheinlichkeit von {0} zahlen</b> müssen (d.h. zu {3} müssen Sie nichts zahlen)."],
-        [1500, 3000, "33 %", "67 %", "Möchten Sie lieber {2} € mit Sicherheit zahlen oder {1} € mit einer Wahrscheinlichkeit von {0}?", "{1} € mit Sicherheit", "{2} € zu {0}", "Entscheiden Sie sich zwischen dem Betrag, den Sie <b>mit Sicherheit zahlen</b> müssen, oder {2} € die Sie <b>mit einer Wahrscheinlichkeit von {0} zahlen</b> müssen (d.h. zu {3} müssen Sie nichts zahlen)."],
-        [1500, 3000, "10 %", "90 %", "Möchten Sie lieber {2} € mit Sicherheit zahlen oder {1} € mit einer Wahrscheinlichkeit von {0}?", "{1} € mit Sicherheit", "{2} € zu {0}", "Entscheiden Sie sich zwischen dem Betrag, den Sie <b>mit Sicherheit zahlen</b> müssen, oder {2} € die Sie <b>mit einer Wahrscheinlichkeit von {0} zahlen</b> müssen (d.h. zu {3} müssen Sie nichts zahlen)."],
+        [100, 200, "1 Monat", "", "Möchten Sie lieber in {0} {1} € zahlen oder {2} € jetzt?", "{1} € jetzt", "{2} € in {0}", "Entscheiden Sie sich zwischen dem Betrag, den Sie <b>jetzt zahlen</b> müssen, oder {2} € die Sie <b>in {0} zahlen</b> müssen.", ""],
+        [100, 200, "6 Monaten", "", "Möchten Sie lieber in {0} {1} € zahlen oder {2} € jetzt?", "{1} € jetzt", "{2} € in {0}", "Entscheiden Sie sich zwischen dem Betrag, den Sie <b>jetzt zahlen</b> müssen, oder {2} € die Sie <b>in {0} zahlen</b> müssen.", ""],
+        [100, 200, "1 Jahr", "", "Möchten Sie lieber in {0} {1} € zahlen oder {2} € jetzt?", "{1} € jetzt", "{2} € in {0}", "Entscheiden Sie sich zwischen dem Betrag, den Sie <b>jetzt zahlen</b> müssen, oder {2} € die Sie <b>in {0} zahlen</b> müssen.", ""],
+        [100, 200, "5 Jahren", "", "Möchten Sie lieber in {0} {1} € zahlen oder {2} € jetzt?", "{1} € jetzt", "{2} € in {0}", "Entscheiden Sie sich zwischen dem Betrag, den Sie <b>jetzt zahlen</b> müssen, oder {2} € die Sie <b>in {0} zahlen</b> müssen.", ""],
+        [100, 200, "10 Jahren", "", "Möchten Sie lieber in {0} {1} € zahlen oder {2} € jetzt?", "{1} € jetzt", "{2} € in {0}", "Entscheiden Sie sich zwischen dem Betrag, den Sie <b>jetzt zahlen</b> müssen, oder {2} € die Sie <b>in {0} zahlen</b> müssen.", ""],
+        [1500, 3000, "1 Monat", "", "Möchten Sie lieber in {0} {1} € zahlen oder {2} € jetzt?", "{1} € jetzt", "{2} € in {0}", "Entscheiden Sie sich zwischen dem Betrag, den Sie <b>jetzt zahlen</b> müssen, oder {2} € die Sie <b>in {0} zahlen</b> müssen.", ""],
+        [1500, 3000, "6 Monaten", "", "Möchten Sie lieber in {0} {1} € zahlen oder {2} € jetzt?", "{1} € jetzt", "{2} € in {0}", "Entscheiden Sie sich zwischen dem Betrag, den Sie <b>jetzt zahlen</b> müssen, oder {2} € die Sie <b>in {0} zahlen</b> müssen.", ""],
+        [1500, 3000, "1 Jahr", "", "Möchten Sie lieber in {0} {1} € zahlen oder {2} € jetzt?", "{1} € jetzt", "{2} € in {0}", "Entscheiden Sie sich zwischen dem Betrag, den Sie <b>jetzt zahlen</b> müssen, oder {2} € die Sie <b>in {0} zahlen</b> müssen.", ""],
+        [1500, 3000, "5 Jahren", "", "Möchten Sie lieber in {0} {1} € zahlen oder {2} € jetzt?", "{1} € jetzt", "{2} € in {0}", "Entscheiden Sie sich zwischen dem Betrag, den Sie <b>jetzt zahlen</b> müssen, oder {2} € die Sie <b>in {0} zahlen</b> müssen.", ""],
+        [1500, 3000, "10 Jahren", "", "Möchten Sie lieber in {0} {1} € zahlen oder {2} € jetzt?", "{1} € jetzt", "{2} € in {0}", "Entscheiden Sie sich zwischen dem Betrag, den Sie <b>jetzt zahlen</b> müssen, oder {2} € die Sie <b>in {0} zahlen</b> müssen.", "survey_delay_info"],
+        [100, 200, "95 %", "5 %", "Möchten Sie lieber {2} € mit Sicherheit zahlen oder {1} € mit einer Wahrscheinlichkeit von {0}?", "{1} € mit Sicherheit", "{2} € zu {0}", "Entscheiden Sie sich zwischen dem Betrag, den Sie <b>mit Sicherheit zahlen</b> müssen, oder {2} € die Sie <b>mit einer Wahrscheinlichkeit von {0} zahlen</b> müssen (d.h. zu {3} müssen Sie nichts zahlen).", ""],
+        [100, 200, "90 %", "10 %", "Möchten Sie lieber {2} € mit Sicherheit zahlen oder {1} € mit einer Wahrscheinlichkeit von {0}?", "{1} € mit Sicherheit", "{2} € zu {0}", "Entscheiden Sie sich zwischen dem Betrag, den Sie <b>mit Sicherheit zahlen</b> müssen, oder {2} € die Sie <b>mit einer Wahrscheinlichkeit von {0} zahlen</b> müssen (d.h. zu {3} müssen Sie nichts zahlen).", ""],
+        [100, 200, "75 %", "25 %", "Möchten Sie lieber {2} € mit Sicherheit zahlen oder {1} € mit einer Wahrscheinlichkeit von {0}?", "{1} € mit Sicherheit", "{2} € zu {0}", "Entscheiden Sie sich zwischen dem Betrag, den Sie <b>mit Sicherheit zahlen</b> müssen, oder {2} € die Sie <b>mit einer Wahrscheinlichkeit von {0} zahlen</b> müssen (d.h. zu {3} müssen Sie nichts zahlen).", ""],
+        [100, 200, "33 %", "67 %", "Möchten Sie lieber {2} € mit Sicherheit zahlen oder {1} € mit einer Wahrscheinlichkeit von {0}?", "{1} € mit Sicherheit", "{2} € zu {0}", "Entscheiden Sie sich zwischen dem Betrag, den Sie <b>mit Sicherheit zahlen</b> müssen, oder {2} € die Sie <b>mit einer Wahrscheinlichkeit von {0} zahlen</b> müssen (d.h. zu {3} müssen Sie nichts zahlen).", ""],
+        [100, 200, "10 %", "90 %", "Möchten Sie lieber {2} € mit Sicherheit zahlen oder {1} € mit einer Wahrscheinlichkeit von {0}?", "{1} € mit Sicherheit", "{2} € zu {0}", "Entscheiden Sie sich zwischen dem Betrag, den Sie <b>mit Sicherheit zahlen</b> müssen, oder {2} € die Sie <b>mit einer Wahrscheinlichkeit von {0} zahlen</b> müssen (d.h. zu {3} müssen Sie nichts zahlen).", ""],
+        [1500, 3000, "95 %", "5 %", "Möchten Sie lieber {2} € mit Sicherheit zahlen oder {1} € mit einer Wahrscheinlichkeit von {0}?", "{1} € mit Sicherheit", "{2} € zu {0}", "Entscheiden Sie sich zwischen dem Betrag, den Sie <b>mit Sicherheit zahlen</b> müssen, oder {2} € die Sie <b>mit einer Wahrscheinlichkeit von {0} zahlen</b> müssen (d.h. zu {3} müssen Sie nichts zahlen).", ""],
+        [1500, 3000, "90 %", "10 %", "Möchten Sie lieber {2} € mit Sicherheit zahlen oder {1} € mit einer Wahrscheinlichkeit von {0}?", "{1} € mit Sicherheit", "{2} € zu {0}", "Entscheiden Sie sich zwischen dem Betrag, den Sie <b>mit Sicherheit zahlen</b> müssen, oder {2} € die Sie <b>mit einer Wahrscheinlichkeit von {0} zahlen</b> müssen (d.h. zu {3} müssen Sie nichts zahlen).", ""],
+        [1500, 3000, "75 %", "25 %", "Möchten Sie lieber {2} € mit Sicherheit zahlen oder {1} € mit einer Wahrscheinlichkeit von {0}?", "{1} € mit Sicherheit", "{2} € zu {0}", "Entscheiden Sie sich zwischen dem Betrag, den Sie <b>mit Sicherheit zahlen</b> müssen, oder {2} € die Sie <b>mit einer Wahrscheinlichkeit von {0} zahlen</b> müssen (d.h. zu {3} müssen Sie nichts zahlen).", ""],
+        [1500, 3000, "33 %", "67 %", "Möchten Sie lieber {2} € mit Sicherheit zahlen oder {1} € mit einer Wahrscheinlichkeit von {0}?", "{1} € mit Sicherheit", "{2} € zu {0}", "Entscheiden Sie sich zwischen dem Betrag, den Sie <b>mit Sicherheit zahlen</b> müssen, oder {2} € die Sie <b>mit einer Wahrscheinlichkeit von {0} zahlen</b> müssen (d.h. zu {3} müssen Sie nichts zahlen).", ""],
+        [1500, 3000, "10 %", "90 %", "Möchten Sie lieber {2} € mit Sicherheit zahlen oder {1} € mit einer Wahrscheinlichkeit von {0}?", "{1} € mit Sicherheit", "{2} € zu {0}", "Entscheiden Sie sich zwischen dem Betrag, den Sie <b>mit Sicherheit zahlen</b> müssen, oder {2} € die Sie <b>mit einer Wahrscheinlichkeit von {0} zahlen</b> müssen (d.h. zu {3} müssen Sie nichts zahlen).", ""],
     ]
 
 def get_questions() -> list[SurveyQuestion]:
     questions: list[SurveyQuestion] = []
-    for group, [min, max, change, change_else, string, opt1, opt2, info] in enumerate(get_question_groups()):
+    for group, [min, max, change, change_else, string, opt1, opt2, info, redirect] in enumerate(get_question_groups()):
         # Flat binary decision tree
         group_base = len(questions)
         id = group_base
@@ -107,7 +108,8 @@ def get_questions() -> list[SurveyQuestion]:
                     ],
                     filter,
                     adjustment,
-                    info.format(change, low, high, change_else) if depth == 0 else ""
+                    info.format(change, low, high, change_else) if depth == 0 else "",
+                    redirect if depth == 0 else ""
                 ))
                 id += 1
     return questions
@@ -152,7 +154,7 @@ def survey_delay_info():
     if request.method == "POST":
         return redirect('/survey_delay_question')
     
-    return render_template('survey_delay_info.html')
+    return render_template('survey_delay_info.html', id=session['question_id'])
 
 @app.route('/survey_delay_question', methods=['GET', 'POST'])
 def survey():
@@ -219,8 +221,13 @@ def survey():
                 logging.debug(f'UUID[{session["uuid"]}]: Calculated subjective value for group {question_group}: {session["value"][question_group]} (only delayed/immediate)')
             pass
 
+        # Redirect end
         if (session['question_id'] >= len(questions)):
             return redirect('/end_survey', code=307)
+
+        # Redirect info
+        if questions[session['question_id']].redirect != "":
+            return redirect(questions[session['question_id']].redirect)
         
         return redirect('/survey_delay_question')
     
