@@ -271,8 +271,12 @@ def end_survey():
 
 @app.route('/stats', methods=['GET'])
 def stats():
+    init()
+
     cursor.execute("SELECT COUNT(*) FROM participants")
     num_participants = cursor.fetchone()[0]
+    if num_participants == 0:
+        return "Database is empty."
 
     cursor.execute("SELECT COUNT(*) FROM (SELECT uuid, COUNT(*) FROM answers GROUP BY uuid HAVING COUNT(*) = ?)", (len(get_question_groups()),))
     num_completed = cursor.fetchone()[0]
