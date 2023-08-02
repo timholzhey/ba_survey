@@ -291,7 +291,7 @@ def stats():
     cursor.execute("SELECT COUNT(*) FROM participants WHERE created_at >= DATE('now')")
     num_completed_today = cursor.fetchone()[0]
 
-    cursor.execute("SELECT created_at FROM participants WHERE uuid IN (SELECT uuid FROM (SELECT uuid, COUNT(*) FROM answers GROUP BY uuid HAVING COUNT(*) = ?))", (len(get_question_groups()),))
+    cursor.execute("SELECT created_at FROM participants WHERE uuid IN (SELECT uuid FROM (SELECT uuid, COUNT(*) FROM answers GROUP BY uuid HAVING COUNT(*) = ?)) ORDER BY created_at DESC", (len(get_question_groups()),))
     completed_timestamps = cursor.fetchall()
 
     stats = {
