@@ -43,8 +43,9 @@
         // Populate values
         let graphValues = [];
         for (let group in results) {
-            let numGraph = Math.floor(group / pointsPerGraph);
+            let numGraph = Math.floor(((parseInt(group) + 10) % 20) / pointsPerGraph);
             let value = results[group];
+            console.log(numGraph, value);
             if (graphValues[numGraph] === undefined) {
                 graphValues[numGraph] = [];
             }

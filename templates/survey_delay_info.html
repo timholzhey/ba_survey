@@ -6,8 +6,8 @@
 <body>
     {% include 'components/back-navigation.html' %}
     <main>
-        {% if id == 0 %}
-        <h1>Teil 1 - Verspätete Verluste</h1>
+        {% if id != 0 %}
+        <h1>Teil 2 - Verspätete Verluste</h1>
         <hr>
         <p class="info-text">
             In diesem Teil der Studie werden Sie gebeten, mehrere <b>hypothetische</b> Entscheidungen über verschiedene Geldbeträge zu treffen, die Sie <b>BEZAHLEN</b> könnten. Es handelt sich demnach um VERLUSTE, welche Sie hypothetisch realisieren müssen.<br>
@@ -19,7 +19,7 @@
             Bitte lesen Sie sorgfältig und wählen Sie Ihre Antwort bedacht aus.
         </p>
         {% else %}
-        <h1>Teil 2 - Wahrscheinliche Verluste</h1>
+        <h1>Teil 1 - Wahrscheinliche Verluste</h1>
         <hr>
         <p class="info-text">
             In diesem Teil der Studie werden Sie gebeten, mehrere <b>hypothetische</b> Entscheidungen über verschiedene Geldbeträge zu treffen, die Sie <b>BEZAHLEN</b> könnten. Es handelt sich demnach um VERLUSTE, welche Sie hypothetisch realisieren müssen.<br>
