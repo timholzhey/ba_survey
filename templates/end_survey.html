@@ -87,7 +87,7 @@
         }
 
         function drawGraph(x, y, width, height, values, index) {
-            const yValuesMax = [200, 3000, 200, 3000];
+            const yValuesMax = [100, 60000, 100, 60000];
             const xValuesDelay = [1, 6, 12, 60, 120];
             const xValuesProbability = [0.0526315789474, 0.1111111111111, 0.3333333333333, 2.030303030303, 9];
             const isDelayGraph = index < numGraphs / 2;
@@ -98,7 +98,7 @@
             ctx.stroke();
 
             // Draw labels
-            const graphLabels = ["200 € (Loss)", "3000 € (Loss)", "200 € (Loss)", "3000 € (Loss)"];
+            const graphLabels = ["100 € (Loss)", "60000 € (Loss)", "100 € (Loss)", "60000 € (Loss)"];
             ctx.font = "12px OpenSans";
             ctx.fillStyle = "#000000";
             ctx.textAlign = "center";
