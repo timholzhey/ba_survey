@@ -77,6 +77,39 @@
             }
         }
 
+        // convert timestamps to numbers
+        unixTimestamps = [];
+        for (let timestamp of timestamps) {
+            unixTimestamps.push(new Date(timestamp).getTime());
+        }
+        
+        // run sliding window with 1 day width in 1 hour steps
+        const windowWidth = 1000 * 60 * 60 * 24;
+        const stepSize = 1000 * 60 * 60;
+        let numParticipantsPerWindow = [];
+        for (let i = minDay.getTime(); i <= maxDay.getTime(); i += stepSize) {
+            let numParticipants = 0;
+            for (let timestamp of unixTimestamps) {
+                if (timestamp >= i && timestamp < i + windowWidth) {
+                    numParticipants++;
+                }
+            }
+            numParticipantsPerWindow.push(numParticipants);
+        }
+        
+        // smooth data with moving average filter
+        const filterWidth = 5 * 60 * 60 * 1000 / stepSize;
+        let smoothedNumParticipantsPerWindow = [];
+        for (let i = 0; i < numParticipantsPerWindow.length; i++) {
+            let sum = 0;
+            let count = 0;
+            for (let j = Math.max(0, i - filterWidth); j < Math.min(numParticipantsPerWindow.length, i + filterWidth); j++) {
+                sum += numParticipantsPerWindow[j];
+                count++;
+            }
+            smoothedNumParticipantsPerWindow.push(sum / count);
+        }
+
         const padding = 50;
 
         function drawCanvas() {
@@ -115,27 +148,54 @@
             }
 
             // draw points
-            ctx.fillStyle = "black";
-            for (let day = minDay; day <= maxDay; day = new Date(day.getTime() + 1000 * 60 * 60 * 24)) {
-                let dayString = day.toISOString().split("T")[0];
-                let val = numParticipantsPerDay[dayString] || 0;
-                let x = padding + (day - minDay) / (1000 * 60 * 60 * 24) * (canvas.width - 2 * padding) / numDays;
-                let y = canvas.height - padding - val * (canvas.height - 2 * padding) / maxParticipantsPerDay;
-                ctx.beginPath();
-                ctx.arc(x, y, 3, 0, 2 * Math.PI);
-                ctx.fill();
-            }
+            // ctx.fillStyle = "black";
+            // for (let day = minDay; day <= maxDay; day = new Date(day.getTime() + 1000 * 60 * 60 * 24)) {
+            //     let dayString = day.toISOString().split("T")[0];
+            //     let val = numParticipantsPerDay[dayString] || 0;
+            //     let x = padding + (day - minDay) / (1000 * 60 * 60 * 24) * (canvas.width - 2 * padding) / numDays;
+            //     let y = canvas.height - padding - val * (canvas.height - 2 * padding) / maxParticipantsPerDay;
+            //     ctx.beginPath();
+            //     ctx.arc(x, y, 3, 0, 2 * Math.PI);
+            //     ctx.fill();
+            // }
 
             // draw lines
-            ctx.strokeStyle = "black";
-            ctx.lineWidth = 1;
-            ctx.beginPath();
+            // ctx.strokeStyle = "black";
+            // ctx.lineWidth = 1;
+            // ctx.beginPath();
+            // for (let day = minDay; day <= maxDay; day = new Date(day.getTime() + 1000 * 60 * 60 * 24)) {
+            //     let dayString = day.toISOString().split("T")[0];
+            //     let val = numParticipantsPerDay[dayString] || 0;
+            //     let x = padding + (day - minDay) / (1000 * 60 * 60 * 24) * (canvas.width - 2 * padding) / numDays;
+            //     let y = canvas.height - padding - val * (canvas.height - 2 * padding) / maxParticipantsPerDay;
+            //     if (day === minDay) {
+            //         ctx.moveTo(x, y);
+            //     } else {
+            //         ctx.lineTo(x, y);
+            //     }
+            // }
+            // ctx.stroke();
+
+            // draw bar graph (not smoothed, per day)
+            ctx.fillStyle = "turquoise";
             for (let day = minDay; day <= maxDay; day = new Date(day.getTime() + 1000 * 60 * 60 * 24)) {
                 let dayString = day.toISOString().split("T")[0];
                 let val = numParticipantsPerDay[dayString] || 0;
                 let x = padding + (day - minDay) / (1000 * 60 * 60 * 24) * (canvas.width - 2 * padding) / numDays;
                 let y = canvas.height - padding - val * (canvas.height - 2 * padding) / maxParticipantsPerDay;
-                if (day === minDay) {
+                let left = Math.max(x - canvas.width / numDays / 2 + 5, padding);
+                let right = Math.min(x + canvas.width / numDays / 2 - 5, canvas.width - padding);
+                ctx.fillRect(left, y, right - left, canvas.height - padding - y);
+            }
+
+            // draw smoothed lines
+            ctx.strokeStyle = "black";
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            for (let i = 0; i < smoothedNumParticipantsPerWindow.length; i++) {
+                let x = padding + i * (canvas.width - 2 * padding) / smoothedNumParticipantsPerWindow.length;
+                let y = canvas.height - padding - smoothedNumParticipantsPerWindow[i] * (canvas.height - 2 * padding) / maxParticipantsPerDay;
+                if (i === 0) {
                     ctx.moveTo(x, y);
                 } else {
                     ctx.lineTo(x, y);
