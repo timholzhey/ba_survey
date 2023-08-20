@@ -77,38 +77,80 @@
             }
         }
 
-        // convert timestamps to numbers
-        unixTimestamps = [];
-        for (let timestamp of timestamps) {
-            unixTimestamps.push(new Date(timestamp).getTime());
+        // fill num participants per day array
+        let numParticipantsPerDayArray = [];
+        for (let i = 0; i <= numDays; i++) {
+            let day = new Date(minDay.getTime() + i * 1000 * 60 * 60 * 24);
+            let dayString = day.toISOString().split("T")[0];
+            if (numParticipantsPerDay[dayString] === undefined) {
+                numParticipantsPerDayArray.push(0);
+            } else {
+                numParticipantsPerDayArray.push(numParticipantsPerDay[dayString]);
+            }
         }
         
-        // run sliding window with 1 day width in 1 hour steps
-        const windowWidth = 1000 * 60 * 60 * 24;
-        const stepSize = 1000 * 60 * 60;
-        let numParticipantsPerWindow = [];
-        for (let i = minDay.getTime(); i <= maxDay.getTime(); i += stepSize) {
-            let numParticipants = 0;
-            for (let timestamp of unixTimestamps) {
-                if (timestamp >= i && timestamp < i + windowWidth) {
-                    numParticipants++;
+        Array.prototype.upsample = function (factor) {
+            const result = [];
+            for (let i = 0; i < this.length - 1; i++) {
+                const delta = (this[i + 1] - this[i]) / factor;
+                for (let j = 0; j < factor; j++) {
+                    result.push(this[i] + delta * j);
                 }
             }
-            numParticipantsPerWindow.push(numParticipants);
-        }
-        
-        // smooth data with moving average filter
-        const filterWidth = 5 * 60 * 60 * 1000 / stepSize;
-        let smoothedNumParticipantsPerWindow = [];
-        for (let i = 0; i < numParticipantsPerWindow.length; i++) {
-            let sum = 0;
-            let count = 0;
-            for (let j = Math.max(0, i - filterWidth); j < Math.min(numParticipantsPerWindow.length, i + filterWidth); j++) {
-                sum += numParticipantsPerWindow[j];
-                count++;
+            result.push(this[this.length - 1]);
+            return result;
+        };
+
+        Array.prototype.downsample = function (factor) {
+            const result = [];
+            for (let i = 0; i < this.length - 1; i += factor) {
+                result.push(this[i]);
             }
-            smoothedNumParticipantsPerWindow.push(sum / count);
-        }
+            result.push(this[this.length - 1]);
+            return result;
+        };
+
+        Array.prototype.convolute = function (kernel) {
+            const extended = [];
+            const halfKernelSize = Math.floor(kernel.length / 2);
+            for (let i = 0; i < halfKernelSize; i++) {
+                extended.push(this[0]);
+            }
+            extended.push(...this);
+            for (let i = 0; i < halfKernelSize; i++) {
+                extended.push(this[this.length - 1]);
+            }
+
+            const result = [];
+            for (let i = 0; i < this.length; i++) {
+                let sum = 0;
+                for (let j = 0; j < kernel.length; j++) {
+                    sum += extended[i + j] * kernel[j];
+                }
+                result.push(sum);
+            }
+            return result;
+        };
+
+        Array.prototype.normalize = function (high) {
+            const result = [];
+            const max = Math.max(...this);
+            for (let i = 0; i < this.length; i++) {
+                result.push(this[i] / max * high);
+            }
+            return result;
+        };
+
+        const gaussianKernel = (sigma) => {
+            const size = Math.ceil(sigma * 3) * 2 + 1;
+            const kernel = [];
+            for (let i = 0; i < size; i++) {
+                kernel.push(Math.exp(-0.5 * (i - size / 2) ** 2 / sigma ** 2));
+            }
+            return kernel;
+        };
+
+        const smoothedNumParticipants = numParticipantsPerDayArray.upsample(100).convolute(gaussianKernel(20)).normalize(maxParticipantsPerDay)
 
         const padding = 50;
 
@@ -147,35 +189,6 @@
                 ctx.stroke();
             }
 
-            // draw points
-            // ctx.fillStyle = "black";
-            // for (let day = minDay; day <= maxDay; day = new Date(day.getTime() + 1000 * 60 * 60 * 24)) {
-            //     let dayString = day.toISOString().split("T")[0];
-            //     let val = numParticipantsPerDay[dayString] || 0;
-            //     let x = padding + (day - minDay) / (1000 * 60 * 60 * 24) * (canvas.width - 2 * padding) / numDays;
-            //     let y = canvas.height - padding - val * (canvas.height - 2 * padding) / maxParticipantsPerDay;
-            //     ctx.beginPath();
-            //     ctx.arc(x, y, 3, 0, 2 * Math.PI);
-            //     ctx.fill();
-            // }
-
-            // draw lines
-            // ctx.strokeStyle = "black";
-            // ctx.lineWidth = 1;
-            // ctx.beginPath();
-            // for (let day = minDay; day <= maxDay; day = new Date(day.getTime() + 1000 * 60 * 60 * 24)) {
-            //     let dayString = day.toISOString().split("T")[0];
-            //     let val = numParticipantsPerDay[dayString] || 0;
-            //     let x = padding + (day - minDay) / (1000 * 60 * 60 * 24) * (canvas.width - 2 * padding) / numDays;
-            //     let y = canvas.height - padding - val * (canvas.height - 2 * padding) / maxParticipantsPerDay;
-            //     if (day === minDay) {
-            //         ctx.moveTo(x, y);
-            //     } else {
-            //         ctx.lineTo(x, y);
-            //     }
-            // }
-            // ctx.stroke();
-
             // draw bar graph (not smoothed, per day)
             ctx.fillStyle = "turquoise";
             for (let day = minDay; day <= maxDay; day = new Date(day.getTime() + 1000 * 60 * 60 * 24)) {
@@ -192,9 +205,9 @@
             ctx.strokeStyle = "black";
             ctx.lineWidth = 2;
             ctx.beginPath();
-            for (let i = 0; i < smoothedNumParticipantsPerWindow.length; i++) {
-                let x = padding + i * (canvas.width - 2 * padding) / smoothedNumParticipantsPerWindow.length;
-                let y = canvas.height - padding - smoothedNumParticipantsPerWindow[i] * (canvas.height - 2 * padding) / maxParticipantsPerDay;
+            for (let i = 0; i < smoothedNumParticipants.length; i++) {
+                let x = padding + i * (canvas.width - 2 * padding) / smoothedNumParticipants.length;
+                let y = canvas.height - padding - smoothedNumParticipants[i] * (canvas.height - 2 * padding) / maxParticipantsPerDay;
                 if (i === 0) {
                     ctx.moveTo(x, y);
                 } else {
